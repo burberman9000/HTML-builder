@@ -1,17 +1,39 @@
 const fs = require('fs');
 const path = require('path');
-const { stdin, stdout } = process;
-const writeStream = fs.createWriteStream(filePath, { flags: 'a' });
+const readline = require('readline');
 
-stdin.on('data', (data) => {
-  const input = data.toString().trim();
-  fs.appendFile(path.join(__dirname, 'text12.txt'), `${data}`, (err) => {
-    if (err) throw err;
-  });
+const filePath = path.join(__dirname, 'output.txt');
+const outputStream = fs.createWriteStream(filePath, { flags: 'a' });
 
-  writeStream.write(`${input}\n`, (err) => {
-    if (err) {
-      console.log('Unable to write a file');
-    }
-  });
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+console.log('Welcome! Please enter some text. Type "exit" to leave.');
+
+const handleUserInput = (input) => {
+  if (input.trim().toLowerCase() === 'exit') {
+    console.log('Thank you for using the program. Goodbye!');
+    rl.close();
+    process.exit(0);
+  } else {
+    outputStream.write(`${input}\n`);
+    console.log(
+      'Text written to file. Enter more text or type "exit" to quit.',
+    );
+    askForInput();
+  }
+};
+
+const askForInput = () => {
+  rl.question('Please enter your text: ', handleUserInput);
+};
+
+askForInput();
+
+process.on('SIGINT', () => {
+  console.log('\nThank you for using the program. Goodbye!');
+  rl.close();
+  process.exit(0);
 });
