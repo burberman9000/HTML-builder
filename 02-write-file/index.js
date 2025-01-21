@@ -14,9 +14,7 @@ console.log('Welcome! Please enter some text. Type "exit" to leave.');
 
 const handleUserInput = (input) => {
   if (input.trim().toLowerCase() === 'exit') {
-    console.log('Thank you for using the program. Goodbye!');
-    rl.close();
-    process.exit(0);
+    closeProgram();
   } else {
     outputStream.write(`${input}\n`);
     console.log(
@@ -30,10 +28,13 @@ const askForInput = () => {
   rl.question('Please enter your text: ', handleUserInput);
 };
 
-askForInput();
-
-process.on('SIGINT', () => {
-  console.log('\nThank you for using the program. Goodbye!');
+const closeProgram = () => {
+  console.log('Thank you for using the program. Goodbye!');
   rl.close();
+  outputStream.end();
   process.exit(0);
-});
+};
+
+process.on('SIGINT', closeProgram);
+
+askForInput();
